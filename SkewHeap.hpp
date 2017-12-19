@@ -1,28 +1,35 @@
 #ifndef SKEW_HEAP_HPP_
 #define SKEW_HEAP_HPP_
 
+#include <vector>  // Only for the special constructor
+
+template<typename Data>
 class Node {
 public:
-    Node(int key);
+    Node(Data key);
 
-    int key;
+    Data key;
     Node* left_son{nullptr};
     Node* right_son{nullptr};
     Node* father{nullptr};
 };
 
+template<typename Data>
 class SkewHeap {
 public:
-    SkewHeap(int root);
+    // Constructors
+    SkewHeap(Data root);
+    SkewHeap(std::vector<Data> v);
 
+    // Main functions
     SkewHeap merge(SkewHeap* l_heap, SkewHeap* r_heap);
-    int min() const;
-    bool insert(int key);
+    Data min() const;
+    bool insert(Data key);
     bool delete_min();
     bool mod_key(Node* node);
 
     int size() const;
-    int key() const;
+    Data key() const;
     void swap_child();
     SkewHeap left_son() const;
     SkewHeap right_son() const;
