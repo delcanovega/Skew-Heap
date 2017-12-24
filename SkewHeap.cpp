@@ -12,11 +12,11 @@ Node<Data>::Node(Data value) : key{value}, left_son{nullptr}, right_son{nullptr}
 // Constructors
 template<class T>
 SkewHeap<T>::SkewHeap(T value) {
-    root = new node;
-    root->key = value;
-    root->father = nullptr;
-    root->left = nullptr;
-    root->right = nullptr;
+    head = new node;
+    head->key = value;
+    head->father = nullptr;
+    head->left = nullptr;
+    head->right = nullptr;
 }
 /*
 template<typename Data>
@@ -32,16 +32,18 @@ SkewHeap<Data>::SkewHeap(const std::vector<Data>& v) : root{nullptr} {
 
     this = tmp;
 }
-
-template<typename Data>
-SkewHeap<Data>::SkewHeap(SkewHeap* h1, Data* node, SkewHeap* h2) : size{1}, root{node} {
-    set_left_son(h1);
-    set_right_son(h2);
+*/
+template<class T>
+SkewHeap<T>::SkewHeap(SkewHeap* left, SkewHeap* root, SkewHeap* right) {
+    head = new node;
+    head = root->head;
+    head->left = left->head;
+    head->right = right->head;
 }
 
 // Main functions
-template<typename Data>
-SkewHeap<Data>::SkewHeap *merge(SkewHeap* h1, SkewHeap* h2) {
+template<class T>
+SkewHeap<T>* SkewHeap<T>::merge(SkewHeap* h1, SkewHeap* h2) {
     
     if (h1 == nullptr) {
         return *h2;
@@ -51,27 +53,39 @@ SkewHeap<Data>::SkewHeap *merge(SkewHeap* h1, SkewHeap* h2) {
     }
 
     else {
+        SkewHeap* l, r;
         if (h1->key() < h2->key()) {
-            SkewHeap* l1{h1->left_son()};
-            SkewHeap* r1{h1->right_son()};
+            h1->decompose(l, r);
 
-            return SkewHeap( merge(r1, h2), h1->root, l1);
+            return SkewHeap( merge(r, h2), h1, l);
         }
         else {
-            SkewHeap* l2{h2->left_son()};
-            SkewHeap* r2{h2->right_son()};
+            h2->decompose(l, r);  // returns the root node of h2
 
-            return SkewHeap( merge(r2, h1), h2->root, l2);
+            return SkewHeap( merge(r, h1), h2, l);
         }
     }
 }
-
+/*
 template<typename Data>
 Data SkewHeap<Data>::min() const {
     return root->key;
 }
-
+*/
 // Auxiliar functions
+template<class T>
+void SkewHeap<T>::decompose(SkewHeap* left, SkewHeap* right) {
+    left->head = head->left;
+    left->head->father = nullptr;
+
+    right->head = head->right;
+    right->head->father = nullptr;
+
+    head->left = nullptr;
+    head->right = nullptr;
+}
+
+/*
 template<typename Data>
 void SkewHeap<Data>::set_left_son(SkewHeap* heap) {
     root->left_son = heap;

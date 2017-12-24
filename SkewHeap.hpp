@@ -20,10 +20,10 @@ public:
     // Constructors
     SkewHeap(T root);
     //SkewHeap(const std::vector<T>& v);
-    //SkewHeap(SkewHeap* h1, T* root, SkewHeap* h2);
+    SkewHeap(SkewHeap* left, SkewHeap* root, SkewHeap* right);
 
     // Main functions
-    //SkewHeap *merge(SkewHeap* h1, SkewHeap* h2);
+    SkewHeap* merge(SkewHeap* h1, SkewHeap* h2);
     //Data min() const;
     //bool insert(Data key);
     //bool delete_min();
@@ -37,9 +37,10 @@ private:
         node* right;
     };
 
-    node* root;
+    node* head;
 
     // Auxiliar functions
+    void decompose(SkewHeap* left, SkewHeap* right);
     //SkewHeap left() const;
     //SkewHeap right() const;
 
