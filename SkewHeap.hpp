@@ -6,25 +6,32 @@ class SkewHeap {
 public:
     // Constructors
     SkewHeap(T root);
-    SkewHeap(const SkewHeap<T>& h);
+    SkewHeap(const SkewHeap& h);
     SkewHeap(SkewHeap* left, SkewHeap* root, SkewHeap* right);
     ~SkewHeap();
 
     SkewHeap& operator=(const SkewHeap&);
 
     // Main functions
-    SkewHeap* merge(SkewHeap* h1, SkewHeap* h2);
+    //SkewHeap* merge(SkewHeap* h1, SkewHeap* h2);
     //Data min() const;
     //bool insert(Data key);
     //bool delete_min();
     //bool mod_key(Node* node);
-    void print() const;
 
 private:
     class Node {
     public:
-        Node(const T& n);
-        ~Node();
+        Node(T n)
+          : key(n), father(nullptr), left(nullptr), right(nullptr) {}
+        ~Node() {
+            delete father;
+            delete left;
+            delete right;
+        }
+
+        Node(const Node& n);
+        Node& operator=(const Node&);
         
         friend class SkewHeap;
 
@@ -35,7 +42,7 @@ private:
         Node* right;
     };
 
-    Node* head;
+    Node head;
 
 };
 
