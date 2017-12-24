@@ -1,26 +1,16 @@
 #ifndef SKEW_HEAP_HPP_
 #define SKEW_HEAP_HPP_
 
-//#include <vector>  // Only for the special constructor
-/*
-template<class T>
-class Node {
-public:
-    Node(Data key);
-
-    Data key;
-    Node* left_son{nullptr};
-    Node* right_son{nullptr};
-    Node* father{nullptr};
-};*/
-
-template<class T>
+template <class T>
 class SkewHeap {
 public:
     // Constructors
     SkewHeap(T root);
-    //SkewHeap(const std::vector<T>& v);
+    SkewHeap(const SkewHeap<T>& h);
     SkewHeap(SkewHeap* left, SkewHeap* root, SkewHeap* right);
+    ~SkewHeap();
+
+    SkewHeap& operator=(const SkewHeap&);
 
     // Main functions
     SkewHeap* merge(SkewHeap* h1, SkewHeap* h2);
@@ -28,24 +18,24 @@ public:
     //bool insert(Data key);
     //bool delete_min();
     //bool mod_key(Node* node);
+    void print() const;
 
 private:
-    struct node {
+    class Node {
+    public:
+        Node(const T& n);
+        ~Node();
+        
+        friend class SkewHeap;
+
+    private:
         T key;
-        node* father;
-        node* left;
-        node* right;
+        Node* father;
+        Node* left;
+        Node* right;
     };
 
-    node* head;
-
-    // Auxiliar functions
-    void decompose(SkewHeap* left, SkewHeap* right);
-    //SkewHeap left() const;
-    //SkewHeap right() const;
-
-    //void set_left(SkewHeap* heap);
-    //void set_right(SkewHeap* heap);
+    Node* head;
 
 };
 
