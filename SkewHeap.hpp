@@ -24,6 +24,8 @@ private:
     public:
         Node(T n)
           : key(n), father(nullptr), left(nullptr), right(nullptr) {}
+        Node(T n, Node* f, Node* l, Node* r)
+          : key(n), father(f), left(l), right(r) {}
         ~Node() {
             delete father;
             delete left;
@@ -32,6 +34,7 @@ private:
 
         Node(const Node& n);
         Node& operator=(const Node&);
+        static Node* clone(Node const*);
         
         friend class SkewHeap;
 
@@ -42,7 +45,7 @@ private:
         Node* right;
     };
 
-    Node head;
+    Node* head;
 
 };
 
