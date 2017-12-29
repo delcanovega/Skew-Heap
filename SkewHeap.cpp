@@ -4,21 +4,56 @@
 /* NODE IMPLEMENTATIONS */
 
 template <class T>
-typename SkewHeap<T>::Node* SkewHeap<T>::Node::clone(const Node* dolly) {
+typename SkewHeap<T>::Node* SkewHeap<T>::Node::clone(const Node* dolly, const Node* father = nullptr) {
     if (dolly == nullptr)
         return nullptr;
     else {
-        // preorder (?)
-        return new Node(dolly->key, clone(dolly->father),
-                        clone(dolly->left), clone(dolly->right));
+        Node* me = new Node(dolly->key, father);
+        me->left = clone(dolly->left, me);
+        me->right = clone(dolly->right, me);
+
+        return me;
     }
 }
 
 /* SKEW HEAP IMPLEMENTATIONS */
 
+// Main operations:
+
+template <class T>
+void SkewHeap<T>::merge(SkewHeap& h) {
+    if (head == nullptr) {
+        head = h.head;
+        h.head = nullptr;
+        return;
+    }
+    else if (h2.head == nullptr) {
+        return;
+    }
+    else {
+        SkewHeap l, r;
+        if (head->key < h.head->key) {
+            decompose(this, l, r);
+            merge();
+            return SkewHeap(merge(r, h2), h1, l);
+        }
+        else {
+            decompose(h2, l, r);
+            return SkewHeap(merge(r, h1), h2, l);
+        }
+    }
+}
+
+// Constructors, destructors & operators:
+
+template <class T>
+SkewHeap<T>::SkewHeap() : head(nullptr) {
+    std::clog << "***Default construction" << std::endl;
+}
+
 template <class T>
 SkewHeap<T>::SkewHeap(T root) : head(new Node(root)) {
-    std::clog << "***Default construction" << std::endl;
+    //std::clog << "***Default construction" << std::endl;
 }
 
 template <class T>
@@ -29,6 +64,7 @@ SkewHeap<T>::SkewHeap(const SkewHeap& h) : head(Node::clone(h.head)) {
 
 template <class T>
 SkewHeap<T>::~SkewHeap() {
+    delete head;  // Should I iterate the whole data structure?
 }
 
 template <class T>
@@ -43,11 +79,22 @@ SkewHeap<T>& SkewHeap<T>::operator=(const SkewHeap& rhs)
   return *this;
 }
 
+// Auxiliar functions:
+
+template <class T>
+void SkewHeap<T>::decompose(SkewHeap& h, SkewHeap& l, SkewHeap& r) {
+    l.head = h.head->left;
+    l.head->father = nullptr;
+    h.head->left = nullptr;
+
+    r.head = h.head->right;
+    r.head->father = nullptr;
+    h.head->right = nullptr;
+}
 
 
 
 
-
-/* *...*/
+/* ... */
 
 template class SkewHeap<int>;

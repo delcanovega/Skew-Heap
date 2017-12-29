@@ -5,6 +5,7 @@ template <class T>
 class SkewHeap {
 public:
     // Constructors
+    SkewHeap();
     SkewHeap(T root);
     SkewHeap(const SkewHeap& h);
     SkewHeap(SkewHeap* left, SkewHeap* root, SkewHeap* right);
@@ -13,7 +14,7 @@ public:
     SkewHeap& operator=(const SkewHeap&);
 
     // Main functions
-    //SkewHeap* merge(SkewHeap* h1, SkewHeap* h2);
+    void merge(SkewHeap& h);
     //Data min() const;
     //bool insert(Data key);
     //bool delete_min();
@@ -22,9 +23,7 @@ public:
 private:
     class Node {
     public:
-        Node(T n)
-          : key(n), father(nullptr), left(nullptr), right(nullptr) {}
-        Node(T n, Node* f, Node* l, Node* r)
+        Node(T n, Node* f = nullptr, Node* l = nullptr, Node* r = nullptr)
           : key(n), father(f), left(l), right(r) {}
         ~Node() {
             delete father;
@@ -34,7 +33,7 @@ private:
 
         Node(const Node& n);
         Node& operator=(const Node&);
-        static Node* clone(Node const*);
+        static Node* clone(const Node*, const Node*);
         
         friend class SkewHeap;
 
@@ -47,6 +46,7 @@ private:
 
     Node* head;
 
+    void decompose(SkewHeap& h, SkewHeap& l, SkewHeap& r);
 };
 
 #endif  // SKEW_HEAP_HPP_
