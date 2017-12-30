@@ -28,6 +28,12 @@ void SkewHeap<T>::merge(SkewHeap* h) {
     head = merge(head, h->head);  // recursive function
 }
 
+template <class T>
+T SkewHeap<T>::min() const {
+    // TODO: Error handling
+    return head->key;
+}
+
 // Constructors, destructors & operators:
 
 template <class T>
