@@ -126,8 +126,8 @@ typename SkewHeap<T>::Node* SkewHeap<T>::merge(Node* n1, Node* n2, Node* p) {
             std::swap(n1, n2);
 
         n1->father = p;
-        n1->right = n1->left;
-        n1->left = merge(n1->right, n2, n1);
+        std::swap(n1->left, n1->right);
+        n1->left = merge(n1->left, n2, n1);
     }
     return n1;
 }
