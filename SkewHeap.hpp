@@ -35,7 +35,7 @@ private:
 
         Node(const Node& n);
         Node& operator=(const Node&);
-        static Node* clone(const Node*, const Node*);
+        static Node* clone(Node* dolly, Node* father = nullptr);
         
         friend class SkewHeap;
 
@@ -49,7 +49,7 @@ private:
     Node* head;
 
     //void decompose(SkewHeap* h, SkewHeap* l, SkewHeap* r);
-    void merge(Node* n1, Node* n2);
+    Node* merge(Node* n1, Node* n2, Node* parent = nullptr);
 };
 
 #endif  // SKEW_HEAP_HPP_

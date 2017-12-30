@@ -5,7 +5,7 @@
 /* NODE IMPLEMENTATIONS */
 
 template <class T>
-typename SkewHeap<T>::Node* SkewHeap<T>::Node::clone(const Node* dolly, const Node* father = nullptr) {
+typename SkewHeap<T>::Node* SkewHeap<T>::Node::clone(Node* dolly, Node* father) {
     if (dolly == nullptr)
         return nullptr;
     else {
@@ -25,7 +25,7 @@ template <class T>
 void SkewHeap<T>::merge(SkewHeap* h) {
     // this function is just a wrapper
     // nullptr handling inside the recursive function
-    merge(head, h->head);  // recursive function
+    head = merge(head, h->head);  // recursive function
 }
 
 // Constructors, destructors & operators:
@@ -96,20 +96,22 @@ void SkewHeap<T>::decompose(SkewHeap& h, SkewHeap& l, SkewHeap& r) {
 }
 */
 template <class T>
-void SkewHeap<T>::merge(Node* n1, Node* n2) {
+typename SkewHeap<T>::Node* SkewHeap<T>::merge(Node* n1, Node* n2, Node* p) {
     // Base case
     if (n1 == nullptr || n2 == nullptr) {
         if (n1 == nullptr)
             std::swap(n1, n2);
-        return;
     }
-
     // Recursive step
-    if (n2->key < n1->key)
-        std::swap(n1, n2);
+    else {
+        if (n2->key < n1->key)
+            std::swap(n1, n2);
 
-    n1->right = n1->left;
-    n1->left = merge(n1->right, n2);
+        n1->father = p;
+        n1->right = n1->left;
+        n1->left = merge(n1->right, n2, n1);
+    }
+    return n1;
 }
 
 
