@@ -13,10 +13,10 @@ public:
     ~SkewHeap();
 
     SkewHeap& operator=(const SkewHeap&);
-    SkewHeap& operator=(SkewHeap&&)
+    SkewHeap& operator=(SkewHeap&&);
 
     // Main functions
-    void merge(SkewHeap& h);
+    void merge(SkewHeap* h);
     //Data min() const;
     //bool insert(Data key);
     //bool delete_min();
@@ -48,7 +48,8 @@ private:
 
     Node* head;
 
-    void decompose(SkewHeap& h, SkewHeap& l, SkewHeap& r);
+    //void decompose(SkewHeap* h, SkewHeap* l, SkewHeap* r);
+    void merge(Node* n1, Node* n2);
 };
 
 #endif  // SKEW_HEAP_HPP_

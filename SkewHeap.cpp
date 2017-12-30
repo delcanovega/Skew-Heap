@@ -1,5 +1,6 @@
 #include "SkewHeap.hpp"
-#include <iostream>  // For log
+#include <iostream>   // log
+#include <algorithm>  // swap
 
 /* NODE IMPLEMENTATIONS */
 
@@ -21,27 +22,10 @@ typename SkewHeap<T>::Node* SkewHeap<T>::Node::clone(const Node* dolly, const No
 // Main operations:
 
 template <class T>
-void SkewHeap<T>::merge(SkewHeap& h) {
-    if (head == nullptr) {
-        head = h.head;
-        h.head = nullptr;
-        return;
-    }
-    else if (h2.head == nullptr) {
-        return;
-    }
-    else {
-        SkewHeap l, r;
-        if (head->key < h.head->key) {
-            decompose(this, l, r);
-            merge();
-            return SkewHeap(merge(r, h2), h1, l);
-        }
-        else {
-            decompose(h2, l, r);
-            return SkewHeap(merge(r, h1), h2, l);
-        }
-    }
+void SkewHeap<T>::merge(SkewHeap* h) {
+    // this function is just a wrapper
+    // nullptr handling inside the recursive function
+    merge(head, h->head);  // recursive function
 }
 
 // Constructors, destructors & operators:
@@ -63,9 +47,9 @@ SkewHeap<T>::SkewHeap(const SkewHeap& h) : head(Node::clone(h.head)) {
 }
 
 template <class T>
-SkewHeap<T>::SkewHeap(SkewHeap&& h){
+SkewHeap<T>::SkewHeap(SkewHeap&& h) : head(h.head) {
   std::clog << "***Move construction" << std::endl;
-  head = h.head;
+  //head = h.head;
   h.head = nullptr;
 }
 
@@ -75,8 +59,7 @@ SkewHeap<T>::~SkewHeap() {
 }
 
 template <class T>
-SkewHeap<T>& SkewHeap<T>::operator=(const SkewHeap& rhs)
-{
+SkewHeap<T>& SkewHeap<T>::operator=(const SkewHeap& rhs) {
   std::clog << "***Copy assignment" << std::endl;
   if (&rhs != this)
   {
@@ -87,8 +70,7 @@ SkewHeap<T>& SkewHeap<T>::operator=(const SkewHeap& rhs)
 }
 
 template <class T>
-SkewHeap<T>& SkewHeap<T>::operator=(SkewHeap&& rhs)
-{
+SkewHeap<T>& SkewHeap<T>::operator=(SkewHeap&& rhs) {
   std::clog << "***Move assignment" << std::endl;
   if (&rhs != this)
   {
@@ -98,7 +80,7 @@ SkewHeap<T>& SkewHeap<T>::operator=(SkewHeap&& rhs)
 }
 
 // Auxiliar functions:
-
+/*
 template <class T>
 void SkewHeap<T>::decompose(SkewHeap& h, SkewHeap& l, SkewHeap& r) {
     // Emancipate the child into the new heaps
@@ -112,8 +94,23 @@ void SkewHeap<T>::decompose(SkewHeap& h, SkewHeap& l, SkewHeap& r) {
     h.head->left = nullptr;
     h.head->right = nullptr;
 }
+*/
+template <class T>
+void SkewHeap<T>::merge(Node* n1, Node* n2) {
+    // Base case
+    if (n1 == nullptr || n2 == nullptr) {
+        if (n1 == nullptr)
+            std::swap(n1, n2);
+        return;
+    }
 
+    // Recursive step
+    if (n2->key < n1->key)
+        std::swap(n1, n2);
 
+    n1->right = n1->left;
+    n1->left = merge(n1->right, n2);
+}
 
 
 /* ... */
