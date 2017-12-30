@@ -46,6 +46,14 @@ void SkewHeap<T>::delete_min() {
     head = merge(head->left, head->right);
 }
 
+template <class T>
+void SkewHeap<T>::mod_key(Node* node, T value) {
+    if (value < node->key)
+        decrease_key(node, value);
+    else
+        increase_key(node, value);
+}
+
 // Constructors, destructors & operators:
 
 template <class T>
@@ -132,6 +140,38 @@ typename SkewHeap<T>::Node* SkewHeap<T>::merge(Node* n1, Node* n2, Node* p) {
     return n1;
 }
 
+template <class T>
+void SkewHeap<T>::increase_key(Node* node, T value) {
+    node->key = value;
+    if (node->left->key < value) {
+        Node* l = new Node(node->left->key, nullptr,
+                           node->left->left, node->left->right);
+        
+        node->left = nullptr;
+        merge(head, l);
+    }
+    if (node->right->key < value) {
+        Node* r = new Node(node->right->key, nullptr,
+                           node->right->left, node->right->right);
+
+        node->right = nullptr;
+        merge(head, r);
+    }
+}
+
+template <class T>
+void SkewHeap<T>::decrease_key(Node* node, T value) {
+    node->key = value;
+    if (value < node->father->key) {
+        if (node->father->left == node)
+            node->father->left = nullptr;
+        else
+            node->father->right = nullptr;
+        
+        node->father = nullptr;
+        merge(head, node);
+    }
+}
 
 /* ... */
 
