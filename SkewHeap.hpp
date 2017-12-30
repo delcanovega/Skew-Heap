@@ -18,6 +18,9 @@ class SkewHeap {
         Node(const Node& n);
         Node& operator=(const Node&);
         static Node* clone(Node* dolly, Node* father = nullptr);
+
+        T value() const;
+        Node* parent() const;
         
         friend class SkewHeap;
 

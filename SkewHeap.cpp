@@ -17,6 +17,16 @@ typename SkewHeap<T>::Node* SkewHeap<T>::Node::clone(Node* dolly, Node* father) 
     }
 }
 
+template <class T>
+T SkewHeap<T>::Node::value() const {
+    return key;
+}
+
+template <class T>
+typename SkewHeap<T>::Node* SkewHeap<T>::Node::parent() const {
+    return father;
+}
+
 /* SKEW HEAP IMPLEMENTATIONS */
 
 // Main operations:
