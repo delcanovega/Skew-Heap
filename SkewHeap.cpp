@@ -48,18 +48,25 @@ void SkewHeap<T>::merge(SkewHeap& h) {
 
 template <class T>
 SkewHeap<T>::SkewHeap() : head(nullptr) {
-    std::clog << "***Default construction" << std::endl;
+    std::clog << "***Default empty construction" << std::endl;
 }
 
 template <class T>
 SkewHeap<T>::SkewHeap(T root) : head(new Node(root)) {
-    //std::clog << "***Default construction" << std::endl;
+    std::clog << "***Default construction" << std::endl;
 }
 
 template <class T>
 SkewHeap<T>::SkewHeap(const SkewHeap& h) : head(Node::clone(h.head)) {
     std::clog << "***Copy construction" << std::endl;
     //head = Node::clone(h.head);
+}
+
+template <class T>
+SkewHeap<T>::SkewHeap(SkewHeap&& h){
+  std::clog << "***Move construction" << std::endl;
+  head = h.head;
+  h.head = nullptr;
 }
 
 template <class T>
@@ -79,16 +86,30 @@ SkewHeap<T>& SkewHeap<T>::operator=(const SkewHeap& rhs)
   return *this;
 }
 
+template <class T>
+SkewHeap<T>& SkewHeap<T>::operator=(SkewHeap&& rhs)
+{
+  std::clog << "***Move assignment" << std::endl;
+  if (&rhs != this)
+  {
+    std::swap(head, rhs.head);
+  }
+  return *this;
+}
+
 // Auxiliar functions:
 
 template <class T>
 void SkewHeap<T>::decompose(SkewHeap& h, SkewHeap& l, SkewHeap& r) {
+    // Emancipate the child into the new heaps
     l.head = h.head->left;
     l.head->father = nullptr;
-    h.head->left = nullptr;
 
     r.head = h.head->right;
     r.head->father = nullptr;
+
+    // Isolate the root
+    h.head->left = nullptr;
     h.head->right = nullptr;
 }
 

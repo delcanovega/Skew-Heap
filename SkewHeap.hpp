@@ -8,10 +8,12 @@ public:
     SkewHeap();
     SkewHeap(T root);
     SkewHeap(const SkewHeap& h);
+    SkewHeap(SkewHeap&& h);
     SkewHeap(SkewHeap* left, SkewHeap* root, SkewHeap* right);
     ~SkewHeap();
 
     SkewHeap& operator=(const SkewHeap&);
+    SkewHeap& operator=(SkewHeap&&)
 
     // Main functions
     void merge(SkewHeap& h);
