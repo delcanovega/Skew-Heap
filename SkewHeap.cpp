@@ -40,6 +40,12 @@ void SkewHeap<T>::insert(T k) {
     merge(h);
 }
 
+template <class T>
+void SkewHeap<T>::delete_min() {
+    // TODO: Error handling
+    head = merge(head->left, head->right);
+}
+
 // Constructors, destructors & operators:
 
 template <class T>

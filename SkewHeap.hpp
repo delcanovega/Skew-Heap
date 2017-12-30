@@ -19,7 +19,7 @@ public:
     void merge(SkewHeap* h);
     T min() const;
     void insert(T key);
-    //bool delete_min();
+    void delete_min();
     //bool mod_key(Node* node);
 
 private:
