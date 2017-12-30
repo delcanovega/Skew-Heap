@@ -173,6 +173,48 @@ void SkewHeap<T>::decrease_key(Node* node, T value) {
     }
 }
 
-/* ... */
+/* ITERATOR IMPLEMENTATIONS */
+
+template <class T>
+SkewHeap<T>::Iterator::Iterator(Node* n) : current{n}, frontier{std::queue<Node*>()} {}
+
+template <class T>
+typename SkewHeap<T>::Iterator SkewHeap<T>::begin() const {
+    SkewHeap<T>::Iterator it{head};
+    return it;
+}
+
+template <class T>
+typename SkewHeap<T>::Iterator SkewHeap<T>::end() const {
+    SkewHeap<T>::Iterator it{nullptr};
+    return it;
+}
+
+template <class T>
+typename SkewHeap<T>::Iterator& SkewHeap<T>::Iterator::operator++() {
+    if (current->left != nullptr)
+        frontier.push(current->left);
+    if (current->right != nullptr)
+        frontier.push(current->right);
+    
+    if (!frontier.empty()) {
+        current = frontier.front();
+        frontier.pop();
+    }
+    else
+        current = nullptr;
+    
+    return *this;
+}
+
+template <class T>
+bool SkewHeap<T>::Iterator::operator!=(const SkewHeap::Iterator& other) const {
+  return this->current != other.current;
+}
+
+template <class T>
+T& SkewHeap<T>::Iterator::operator*() const {
+  return current->key;
+}
 
 template class SkewHeap<int>;

@@ -1,9 +1,10 @@
 #ifndef SKEW_HEAP_HPP_
 #define SKEW_HEAP_HPP_
 
+#include <queue>
+
 template <class T>
 class SkewHeap {
-
     class Node {
     public:
         Node(T n, Node* f = nullptr, Node* l = nullptr, Node* r = nullptr)
@@ -29,20 +30,19 @@ class SkewHeap {
 
     Node* head;
 
-    //void decompose(SkewHeap* h, SkewHeap* l, SkewHeap* r);
+
     Node* merge(Node* n1, Node* n2, Node* parent = nullptr);
     void increase_key(Node* node, T value);
     void decrease_key(Node* node, T value);
-    
+
 public:
     // Constructors
     SkewHeap();
     SkewHeap(T root);
     SkewHeap(const SkewHeap& h);
     SkewHeap(SkewHeap&& h);
-    SkewHeap(SkewHeap* left, SkewHeap* root, SkewHeap* right);
     ~SkewHeap();
-
+    // Operators
     SkewHeap& operator=(const SkewHeap&);
     SkewHeap& operator=(SkewHeap&&);
 
@@ -52,6 +52,35 @@ public:
     void insert(T key);
     void delete_min();
     void mod_key(Node* node, T value);
+
+    /* Iterator */
+    using value_type = T;
+    class Iterator {
+    public:
+
+        friend class Node;
+        Iterator(Node* n);
+        Iterator(Iterator&& other) = default;
+        Iterator(const Iterator& other) = default;
+        Iterator& operator=(Iterator&& other) = default;
+        Iterator& operator=(const Iterator& other) = default;
+        ~Iterator() = default;
+
+        // Operators
+        Iterator& operator++();
+        bool operator!=(const Iterator& other) const;
+        T& operator*() const;
+        
+        Node* current{nullptr};
+    
+    private:
+
+        std::queue<Node*> frontier;
+    };
+
+    Iterator begin() const;
+    Iterator end() const;
+
 };
 
 #endif  // SKEW_HEAP_HPP_
