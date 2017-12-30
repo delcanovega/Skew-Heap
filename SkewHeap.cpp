@@ -34,6 +34,12 @@ T SkewHeap<T>::min() const {
     return head->key;
 }
 
+template <class T>
+void SkewHeap<T>::insert(T k) {
+    SkewHeap<T>* h = new SkewHeap(k);
+    merge(h);
+}
+
 // Constructors, destructors & operators:
 
 template <class T>

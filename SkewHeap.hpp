@@ -18,7 +18,7 @@ public:
     // Main functions
     void merge(SkewHeap* h);
     T min() const;
-    //bool insert(Data key);
+    void insert(T key);
     //bool delete_min();
     //bool mod_key(Node* node);
 
