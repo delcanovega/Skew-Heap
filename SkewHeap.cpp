@@ -5,6 +5,17 @@
 /* NODE IMPLEMENTATIONS */
 
 template <class T>
+SkewHeap<T>::Node(T n, Node* f, Node* l, Node* r)
+  : key(n), father(f), left(l), right(r) {}
+
+template <class T>
+SkewHeap<T>::~Node() {
+    delete father;
+    delete left;
+    delete right;
+}
+
+template <class T>
 typename SkewHeap<T>::Node* SkewHeap<T>::Node::clone(Node* dolly, Node* father) {
     if (dolly == nullptr)
         return nullptr;
@@ -116,21 +127,6 @@ SkewHeap<T>& SkewHeap<T>::operator=(SkewHeap&& rhs) {
 }
 
 // Auxiliar functions:
-/*
-template <class T>
-void SkewHeap<T>::decompose(SkewHeap& h, SkewHeap& l, SkewHeap& r) {
-    // Emancipate the child into the new heaps
-    l.head = h.head->left;
-    l.head->father = nullptr;
-
-    r.head = h.head->right;
-    r.head->father = nullptr;
-
-    // Isolate the root
-    h.head->left = nullptr;
-    h.head->right = nullptr;
-}
-*/
 template <class T>
 typename SkewHeap<T>::Node* SkewHeap<T>::merge(Node* n1, Node* n2, Node* p) {
     // Base case
