@@ -134,27 +134,21 @@ void SkewHeap<T>::decompose(SkewHeap& h, SkewHeap& l, SkewHeap& r) {
 template <class T>
 typename SkewHeap<T>::Node* SkewHeap<T>::merge(Node* n1, Node* n2, Node* p) {
     // Base case
-    //std::clog << " ** entry" << std::endl;
-    //std::clog << " * parent: " << p << std::endl;
     if (n1 == nullptr || n2 == nullptr) {
         if (n1 == nullptr)
             std::swap(n1, n2);
-    //std::clog << " * parent: " << p << std::endl;
+        n1->father = p;
     }
 
     // Recursive step
     else {
-        //std::clog << " ** recursive step" << std::endl;
         if (n2->key < n1->key)
             std::swap(n1, n2);
             
-        //std::clog << " * parent: " << p << std::endl;
-
-        //std::clog << " * n1: " << n1 << std::endl;
         std::swap(n1->left, n1->right);
+        n1->father = p;
         n1->left = merge(n1->left, n2, n1);
     }
-    n1->father = p;
     return n1;
 }
 
