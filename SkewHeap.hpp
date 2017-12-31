@@ -5,31 +5,18 @@
 
 template <class T>
 class SkewHeap {
-public:
-    // Constructors
-    SkewHeap();
-    SkewHeap(T root);
-    SkewHeap(const SkewHeap& h);
-    SkewHeap(SkewHeap&& h);
-    ~SkewHeap();
-    // Operators
-    SkewHeap& operator=(const SkewHeap&);
-    SkewHeap& operator=(SkewHeap&&);
-
-    // Main functions
-    void merge(SkewHeap* h);
-    T min() const;
-    void insert(T key);
-    void delete_min();
-    void mod_key(Node* node, T value);
-
 private:
     class Node {  // SkewHeap's inner class
     public:
         // Constructors:
-        Node(T n, Node* f = nullptr, Node* l = nullptr, Node* r = nullptr);
+        Node(T n, Node* f = nullptr, Node* l = nullptr, Node* r = nullptr)
+          : key(n), father(f), left(l), right(r) {}
         Node(const Node& n) = default;
-        ~Node();
+        ~Node() {
+            delete father;
+            delete left;
+            delete right;
+}
         // Operators:
         Node& operator=(const Node&);
 
@@ -58,6 +45,24 @@ private:
     void decrease_key(Node* node, T value);
 
 public:
+    // Constructors
+    SkewHeap();
+    SkewHeap(T root);
+    SkewHeap(const SkewHeap& h);
+    SkewHeap(SkewHeap&& h);
+    ~SkewHeap();
+    // Operators
+    SkewHeap& operator=(const SkewHeap&);
+    SkewHeap& operator=(SkewHeap&&);
+
+    // Main functions
+    void merge(SkewHeap* h);
+    T min() const;
+    void insert(T key);
+    void delete_min();
+    void mod_key(Node* node, T value);
+
+
     /* Iterator */
 
     using value_type = T;

@@ -5,17 +5,6 @@
 /* NODE IMPLEMENTATIONS */
 
 template <class T>
-SkewHeap<T>::Node(T n, Node* f, Node* l, Node* r)
-  : key(n), father(f), left(l), right(r) {}
-
-template <class T>
-SkewHeap<T>::~Node() {
-    delete father;
-    delete left;
-    delete right;
-}
-
-template <class T>
 typename SkewHeap<T>::Node* SkewHeap<T>::Node::clone(Node* dolly, Node* father) {
     if (dolly == nullptr)
         return nullptr;
