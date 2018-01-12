@@ -1,6 +1,6 @@
 #include "SkewHeap.hpp"
 
-#include <algorithm>  // for swap
+#include <algorithm>  // swap
 
 template <class T>
 SkewHeap<T>::SkewHeap(const T& x) : root(std::make_shared<Node>(x)) {}
@@ -14,8 +14,10 @@ void SkewHeap<T>::merge(SkewHeap& h) {
 
 template <class T>
 T SkewHeap<T>::min() const {
-    // TODO: Error handling
-    return root->key;
+    if (root)
+        return root->key;
+    else
+        return -1;
 }
 
 template <class T>
@@ -26,8 +28,10 @@ void SkewHeap<T>::insert(const T& k) {
 
 template <class T>
 void SkewHeap<T>::delete_min() {
-    // TODO: Error handling
-    root = merge(root.get()->left, root.get()->right);
+    if (root)
+        root = merge(root.get()->left, root.get()->right);
+
+    // The smart pointers handle the lost root automatically
 }
 
 template <class T>
