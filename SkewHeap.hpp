@@ -1,96 +1,43 @@
-#ifndef SKEW_HEAP_HPP_
-#define SKEW_HEAP_HPP_
+#ifndef SSKEW_HEAP_HPP_
+#define SSKEW_HEAP_HPP_
 
-#include <queue>  // For the iterator
+#include <memory>  // for smart pointers
+#include <iostream>  // test
 
 template <class T>
 class SkewHeap {
-private:
-    class Node {  // SkewHeap's inner class
-    public:
-        // Constructors:
-        Node(T n, Node* f = nullptr, Node* l = nullptr, Node* r = nullptr)
-          : key(n), father(f), left(l), right(r) {}
-        Node(const Node& n) = default;
-        ~Node() {
-            delete father;
-            delete left;
-            delete right;
-}
-        // Operators:
-        Node& operator=(const Node&);
-
-        // Accessors:
-        T value() const;
-        Node* parent() const;
-
-        // Auxiliar function for SkewHeap's copy constructor:
-        static Node* clone(Node* dolly, Node* father = nullptr);
-        
-        friend class SkewHeap;
-
-    private:
+    struct Node {
         T key;
-        Node* father;
-        Node* left;
-        Node* right;
+        std::shared_ptr<Node> left;
+        std::shared_ptr<Node> right;
+        Node* parent;
+
+        Node(const T& x) : key(x), left(nullptr), right(nullptr) {}
     };
 
-    // Attributes:
-    Node* head;
+    typedef std::shared_ptr<Node> Node_ptr;
+    Node_ptr root;
 
-    // Auxiliar functions:
-    Node* merge(Node* n1, Node* n2, Node* parent = nullptr);
-    void increase_key(Node* node, T value);
-    void decrease_key(Node* node, T value);
+    Node_ptr merge(Node_ptr& h1, Node_ptr& h2, Node* p = nullptr);
+    void increase_key(Node_ptr node, const T& value);
+    void decrease_key(Node_ptr node, const T& value);
 
 public:
-    // Constructors
-    SkewHeap();
-    SkewHeap(T root);
-    SkewHeap(const SkewHeap& h);
-    SkewHeap(SkewHeap&& h);
-    ~SkewHeap();
-    // Operators
-    SkewHeap& operator=(const SkewHeap&);
-    SkewHeap& operator=(SkewHeap&&);
+    SkewHeap(const T& x);
 
     // Main functions
-    void merge(SkewHeap* h);
+    void merge(SkewHeap& h);
     T min() const;
-    void insert(T key);
+    void insert(const T& key);
     void delete_min();
-    void mod_key(Node* node, T value);
+    void mod_key(Node_ptr node, const T& value);
 
-
-    /* Iterator */
-
-    using value_type = T;
-    class Iterator {
-    public:
-
-        friend class Node;
-        Iterator(Node* n);
-        Iterator(Iterator&& other) = default;
-        Iterator(const Iterator& other) = default;
-        Iterator& operator=(Iterator&& other) = default;
-        Iterator& operator=(const Iterator& other) = default;
-        ~Iterator() = default;
-
-        // Operators
-        Iterator& operator++();
-        bool operator!=(const Iterator& other) const;
-        T& operator*() const;
-        
-        Node* current{nullptr};
-    
-    private:
-
-        std::queue<Node*> frontier;
-    };
-
-    Iterator begin() const;
-    Iterator end() const;
+    void test() {
+        std::cout << root.get()->key << " (-) ";
+        std::cout << root.get()->left.get()->key << " (";
+        std::cout << root.get()->left.get()->parent->key << ") ";
+        std::cout << std::endl;
+    }
 };
 
-#endif  // SKEW_HEAP_HPP_
+#endif  // SSKEW_HEAP_HPP_

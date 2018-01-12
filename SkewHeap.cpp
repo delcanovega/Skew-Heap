@@ -1,217 +1,81 @@
-#include "SkewHeap.hpp"
-#include <iostream>   // log
-#include <algorithm>  // swap
+#include "SSkewHeap.hpp"
 
-/* NODE IMPLEMENTATIONS */
+#include <algorithm>  // for swap
 
 template <class T>
-typename SkewHeap<T>::Node* SkewHeap<T>::Node::clone(Node* dolly, Node* father) {
-    if (dolly == nullptr)
-        return nullptr;
-    else {
-        Node* me = new Node(dolly->key, father);
-        me->left = clone(dolly->left, me);
-        me->right = clone(dolly->right, me);
-
-        return me;
-    }
-}
+SkewHeap<T>::SkewHeap(const T& x) : root(std::make_shared<Node>(x)) {}
 
 template <class T>
-T SkewHeap<T>::Node::value() const {
-    return key;
-}
-
-template <class T>
-typename SkewHeap<T>::Node* SkewHeap<T>::Node::parent() const {
-    return father;
-}
-
-/* SKEW HEAP IMPLEMENTATIONS */
-
-// Main operations:
-
-template <class T>
-void SkewHeap<T>::merge(SkewHeap* h) {
+void SkewHeap<T>::merge(SkewHeap& h) {
     // this function is just a wrapper
     // nullptr handling inside the recursive function
-    head = merge(head, h->head);  // recursive function
+    root = merge(root, h.root);  // recursive function
 }
 
 template <class T>
 T SkewHeap<T>::min() const {
     // TODO: Error handling
-    return head->key;
+    return root->key;
 }
 
 template <class T>
-void SkewHeap<T>::insert(T k) {
-    SkewHeap<T>* h = new SkewHeap(k);
+void SkewHeap<T>::insert(const T& k) {
+    SkewHeap<T> h = SkewHeap(k);
     merge(h);
 }
 
 template <class T>
 void SkewHeap<T>::delete_min() {
     // TODO: Error handling
-    head = merge(head->left, head->right);
+    root = merge(root.get()->left, root.get()->right);
 }
 
 template <class T>
-void SkewHeap<T>::mod_key(Node* node, T value) {
-    if (value < node->key)
-        decrease_key(node, value);
-    else
-        increase_key(node, value);
-}
-
-// Constructors, destructors & operators:
-
-template <class T>
-SkewHeap<T>::SkewHeap() : head(nullptr) {
-    std::clog << "***Default empty construction" << std::endl;
-}
-
-template <class T>
-SkewHeap<T>::SkewHeap(T root) : head(new Node(root)) {
-    std::clog << "***Default construction" << std::endl;
-}
-
-template <class T>
-SkewHeap<T>::SkewHeap(const SkewHeap& h) : head(Node::clone(h.head)) {
-    std::clog << "***Copy construction" << std::endl;
-    //head = Node::clone(h.head);
-}
-
-template <class T>
-SkewHeap<T>::SkewHeap(SkewHeap&& h) : head(h.head) {
-  std::clog << "***Move construction" << std::endl;
-  //head = h.head;
-  h.head = nullptr;
-}
-
-template <class T>
-SkewHeap<T>::~SkewHeap() {
-    delete head;  // Should I iterate the whole data structure?
-}
-
-template <class T>
-SkewHeap<T>& SkewHeap<T>::operator=(const SkewHeap& rhs) {
-  std::clog << "***Copy assignment" << std::endl;
-  if (&rhs != this)
-  {
-    SkewHeap copy(rhs);
-    std::swap(head, copy.head);
-  }
-  return *this;
-}
-
-template <class T>
-SkewHeap<T>& SkewHeap<T>::operator=(SkewHeap&& rhs) {
-  std::clog << "***Move assignment" << std::endl;
-  if (&rhs != this)
-  {
-    std::swap(head, rhs.head);
-  }
-  return *this;
+void SkewHeap<T>::mod_key(Node_ptr n, const T& k) {
+    if (!n)
+        return;
+    
+    if (k < n.get()->key)
+        decrease_key(n, k);
+    else if (k > n.get()->key)
+        increase_key(n, k);
 }
 
 // Auxiliar functions:
-template <class T>
-typename SkewHeap<T>::Node* SkewHeap<T>::merge(Node* n1, Node* n2, Node* p) {
-    // Base case
-    if (n1 == nullptr || n2 == nullptr) {
-        if (n1 == nullptr)
-            std::swap(n1, n2);
-        n1->father = p;
-    }
 
-    // Recursive step
+template <class T>
+typename SkewHeap<T>::Node_ptr SkewHeap<T>::merge(Node_ptr& h1, Node_ptr& h2, Node* p) {
+    // Base case:
+    if (!h1 || !h2) {
+        if (!h1) {
+            std::swap(h1, h2);
+            if (h1)
+                h1.get()->parent = p;
+        }
+    }
+    // Recursive step:
     else {
-        if (n2->key < n1->key)
-            std::swap(n1, n2);
-            
-        std::swap(n1->left, n1->right);
-        n1->father = p;
-        n1->left = merge(n1->left, n2, n1);
-    }
-    return n1;
-}
-
-template <class T>
-void SkewHeap<T>::increase_key(Node* node, T value) {
-    node->key = value;
-    if (node->left->key < value) {
-        Node* l = new Node(node->left->key, nullptr,
-                           node->left->left, node->left->right);
+        if (h2.get()->key < h1.get()->key) {  // We always want to work with h1
+            std::swap(h1.get()->parent, h2.get()->parent);
+            std::swap(h1, h2);
+        }  // we have exchanged the keys and sons, but maintaining the parents
         
-        node->left = nullptr;
-        merge(head, l);
+        std::swap(h1.get()->left, h1.get()->right);
+        h1.get()->parent = p;
+        h1.get()->left = merge(h1.get()->left, h2, h1.get());
     }
-    if (node->right->key < value) {
-        Node* r = new Node(node->right->key, nullptr,
-                           node->right->left, node->right->right);
 
-        node->right = nullptr;
-        merge(head, r);
-    }
+    return h1;
 }
 
 template <class T>
-void SkewHeap<T>::decrease_key(Node* node, T value) {
-    node->key = value;
-    if (value < node->father->key) {
-        if (node->father->left == node)
-            node->father->left = nullptr;
-        else
-            node->father->right = nullptr;
-        
-        node->father = nullptr;
-        merge(head, node);
-    }
-}
+void SkewHeap<T>::decrease_key(Node_ptr n, const T& k) {
 
-/* ITERATOR IMPLEMENTATIONS */
-
-template <class T>
-SkewHeap<T>::Iterator::Iterator(Node* n) : current{n}, frontier{std::queue<Node*>()} {}
-
-template <class T>
-typename SkewHeap<T>::Iterator SkewHeap<T>::begin() const {
-    SkewHeap<T>::Iterator it{head};
-    return it;
 }
 
 template <class T>
-typename SkewHeap<T>::Iterator SkewHeap<T>::end() const {
-    SkewHeap<T>::Iterator it{nullptr};
-    return it;
-}
-
-template <class T>
-typename SkewHeap<T>::Iterator& SkewHeap<T>::Iterator::operator++() {
-    if (current->left != nullptr)
-        frontier.push(current->left);
-    if (current->right != nullptr)
-        frontier.push(current->right);
+void SkewHeap<T>::increase_key(Node_ptr n, const T& k) {
     
-    if (!frontier.empty()) {
-        current = frontier.front();
-        frontier.pop();
-    }
-    else
-        current = nullptr;
-    
-    return *this;
-}
-
-template <class T>
-bool SkewHeap<T>::Iterator::operator!=(const SkewHeap::Iterator& other) const {
-  return this->current != other.current;
-}
-
-template <class T>
-T& SkewHeap<T>::Iterator::operator*() const {
-  return current->key;
 }
 
 template class SkewHeap<int>;
