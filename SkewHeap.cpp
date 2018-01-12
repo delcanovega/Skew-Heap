@@ -1,4 +1,4 @@
-#include "SSkewHeap.hpp"
+#include "SkewHeap.hpp"
 
 #include <algorithm>  // for swap
 
@@ -31,7 +31,7 @@ void SkewHeap<T>::delete_min() {
 }
 
 template <class T>
-void SkewHeap<T>::mod_key(Node_ptr n, const T& k) {
+void SkewHeap<T>::mod_key(Node_ptr& n, const T& k) {
     if (!n)
         return;
     
@@ -69,12 +69,41 @@ typename SkewHeap<T>::Node_ptr SkewHeap<T>::merge(Node_ptr& h1, Node_ptr& h2, No
 }
 
 template <class T>
-void SkewHeap<T>::decrease_key(Node_ptr n, const T& k) {
+void SkewHeap<T>::decrease_key(Node_ptr& n, const T& k) {
+    n.get()->key = k;
 
+    Node_ptr l = n.get()->left;
+    if (l && k < l.get()->key) {
+        l.get()->parent = nullptr;
+        n.get()->left = nullptr;
+    }
+    Node_ptr r = n.get()->right;
+    if (r && k < r.get()->key) {
+        r.get()->parent = nullptr;
+        n.get()->right = nullptr;
+    }
+
+    if (l && k < l.get()->key)
+        merge(root, l);
+    if (r && k < r.get()->key)
+        merge(root, r);
 }
 
 template <class T>
-void SkewHeap<T>::increase_key(Node_ptr n, const T& k) {
+void SkewHeap<T>::increase_key(Node_ptr& n, const T& k) {
+    n.get()->key = k;
+
+    Node* p = n.get()->parent;
+    if (p != nullptr && p->key < k) {
+        n.get()->parent = nullptr;
+
+        if (p->left.get() == n.get())
+            p->left.reset();
+        else
+            p->right.reset();
+
+        merge(root, n);
+    }
     
 }
 

@@ -19,18 +19,19 @@ class SkewHeap {
     Node_ptr root;
 
     Node_ptr merge(Node_ptr& h1, Node_ptr& h2, Node* p = nullptr);
-    void increase_key(Node_ptr node, const T& value);
-    void decrease_key(Node_ptr node, const T& value);
+    void increase_key(Node_ptr& node, const T& value);
+    void decrease_key(Node_ptr& node, const T& value);
 
 public:
     SkewHeap(const T& x);
+    SkewHeap(Node_ptr&& n);
 
     // Main functions
     void merge(SkewHeap& h);
     T min() const;
     void insert(const T& key);
     void delete_min();
-    void mod_key(Node_ptr node, const T& value);
+    void mod_key(Node_ptr& node, const T& value);
 
     void test() {
         std::cout << root.get()->key << " (-) ";
