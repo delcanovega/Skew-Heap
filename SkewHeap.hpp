@@ -5,20 +5,21 @@
 #include <iostream>  // test
 
 template <class T>
+struct Node {
+    T key;
+    std::shared_ptr<Node> left;
+    std::shared_ptr<Node> right;
+    Node* parent;
+
+    Node(const T& x) : key(x), left(nullptr), right(nullptr) {}
+};
+
+template <class T>
 class SkewHeap {
-    struct Node {
-        T key;
-        std::shared_ptr<Node> left;
-        std::shared_ptr<Node> right;
-        Node* parent;
-
-        Node(const T& x) : key(x), left(nullptr), right(nullptr) {}
-    };
-
-    typedef std::shared_ptr<Node> Node_ptr;
+    typedef std::shared_ptr< Node<T> > Node_ptr;
     Node_ptr root;
 
-    Node_ptr merge(Node_ptr& h1, Node_ptr& h2, Node* p = nullptr);
+    Node_ptr merge(Node_ptr& h1, Node_ptr& h2, Node<T>* p = nullptr);
     void increase_key(Node_ptr& node, const T& value);
     void decrease_key(Node_ptr& node, const T& value);
 

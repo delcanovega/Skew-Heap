@@ -3,7 +3,7 @@
 #include <algorithm>  // swap
 
 template <class T>
-SkewHeap<T>::SkewHeap(const T& x) : root(std::make_shared<Node>(x)) {}
+SkewHeap<T>::SkewHeap(const T& x) : root(std::make_shared< Node<T> >(x)) {}
 
 template <class T>
 void SkewHeap<T>::merge(SkewHeap& h) {
@@ -48,7 +48,7 @@ void SkewHeap<T>::mod_key(Node_ptr& n, const T& k) {
 // Auxiliar functions:
 
 template <class T>
-typename SkewHeap<T>::Node_ptr SkewHeap<T>::merge(Node_ptr& h1, Node_ptr& h2, Node* p) {
+typename SkewHeap<T>::Node_ptr SkewHeap<T>::merge(Node_ptr& h1, Node_ptr& h2, Node<T>* p) {
     // Base case:
     if (!h1 || !h2) {
         if (!h1) {
@@ -97,7 +97,7 @@ template <class T>
 void SkewHeap<T>::increase_key(Node_ptr& n, const T& k) {
     n.get()->key = k;
 
-    Node* p = n.get()->parent;
+    Node<T>* p = n.get()->parent;
     if (p != nullptr && p->key < k) {
         n.get()->parent = nullptr;
 
