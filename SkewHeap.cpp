@@ -1,9 +1,17 @@
 #include "SkewHeap.hpp"
 
 #include <algorithm>  // swap
+#include <cassert>
+#include <iostream>
 
 template <class T>
-SkewHeap<T>::SkewHeap(const T& x) : root(std::make_shared< Node<T> >(x)) {}
+SkewHeap<T>::SkewHeap() : root(nullptr) {} 
+
+template <class T>
+SkewHeap<T>::SkewHeap(const T& x) : root(std::make_shared< Node >(x)) {}
+
+template <class T>
+SkewHeap<T>::SkewHeap(const Node* n) : root(std::make_shared< Node >(n)) {}
 
 template <class T>
 void SkewHeap<T>::merge(SkewHeap& h) {
@@ -31,24 +39,26 @@ void SkewHeap<T>::delete_min() {
     if (root)
         root = merge(root.get()->left, root.get()->right);
 
-    // The smart pointers handle the lost root automatically
+    // The smart pointers take care of the lost node automatically
 }
 
 template <class T>
-void SkewHeap<T>::mod_key(Node_ptr& n, const T& k) {
-    if (!n)
-        return;
-    
-    if (k < n.get()->key)
+void SkewHeap<T>::mod_key(const T& k) {
+
+    assert(root);
+    assert(root.get()->left);
+    Node* n = root.get()->left.get();  // Node to modify
+
+    if (k < n->key)
         decrease_key(n, k);
-    else if (k > n.get()->key)
+    else if (k > n->key)
         increase_key(n, k);
 }
 
 // Auxiliar functions:
 
 template <class T>
-typename SkewHeap<T>::Node_ptr SkewHeap<T>::merge(Node_ptr& h1, Node_ptr& h2, Node<T>* p) {
+typename SkewHeap<T>::Node_ptr SkewHeap<T>::merge(Node_ptr& h1, Node_ptr& h2, Node* p) {
     // Base case:
     if (!h1 || !h2) {
         if (!h1) {
@@ -73,42 +83,102 @@ typename SkewHeap<T>::Node_ptr SkewHeap<T>::merge(Node_ptr& h1, Node_ptr& h2, No
 }
 
 template <class T>
-void SkewHeap<T>::decrease_key(Node_ptr& n, const T& k) {
-    n.get()->key = k;
+void SkewHeap<T>::increase_key(Node* n, const T& k) {
+    n->key = k;
 
-    Node_ptr l = n.get()->left;
-    if (l && k < l.get()->key) {
-        l.get()->parent = nullptr;
-        n.get()->left = nullptr;
+    Node* left = n->left.get();
+    Node* right = n->right.get();
+    
+    SkewHeap<T> h1 = SkewHeap();
+    SkewHeap<T> h2 = SkewHeap();
+
+    if (left != nullptr && k > left->key) {
+        left->parent = nullptr;
+
+        h1 = SkewHeap(left);
+
+        n->left.reset();
     }
-    Node_ptr r = n.get()->right;
-    if (r && k < r.get()->key) {
-        r.get()->parent = nullptr;
-        n.get()->right = nullptr;
+    if (right != nullptr && k > right->key) {
+        right->parent = nullptr;
+
+        h2 = SkewHeap(right);
+
+        n->right.reset();
     }
 
-    if (l && k < l.get()->key)
-        merge(root, l);
-    if (r && k < r.get()->key)
-        merge(root, r);
+    h1.merge(h2);
+    merge(h1);
 }
 
 template <class T>
-void SkewHeap<T>::increase_key(Node_ptr& n, const T& k) {
-    n.get()->key = k;
+void SkewHeap<T>::decrease_key(Node* n, const T& k) {
+    n->key = k;
 
-    Node<T>* p = n.get()->parent;
-    if (p != nullptr && p->key < k) {
-        n.get()->parent = nullptr;
+    Node* p = n->parent;
+    if (p != nullptr && k < p->key) {
+        n->parent = nullptr;
 
-        if (p->left.get() == n.get())
+        SkewHeap<T> h = SkewHeap(n);
+
+        if (p->left.get() == n)
             p->left.reset();
-        else
+        else if (p->right.get() == n)
             p->right.reset();
 
-        merge(root, n);
+        merge(h);
     }
     
+}
+
+template <class T>
+void SkewHeap<T>::print() {
+    if (root) {
+        frontier.clear();
+        route(root);
+        //pretty_print();
+    }
+}
+
+template <class T>
+void SkewHeap<T>::route(Node_ptr& n) {
+    //if (n.get() == nullptr) {
+    //    std::cout << std::endl;
+    //    return;
+    //}
+
+    std::cout << n.get()->key << "(";
+    if (n.get()->parent != nullptr)
+        std::cout << n.get()->parent->key << "), ";
+    else
+        std::cout << "-), ";
+    
+    if (n->left)
+        frontier.push_back(n->left);
+    if (n->right)
+        frontier.push_back(n->right);
+    
+    if (frontier.empty()) {
+        std::cout << std::endl;
+        return;
+    }
+
+    Node_ptr next = frontier.front();
+    frontier.pop_front();
+    route(next);
+}
+
+template <class T>
+void SkewHeap<T>::pretty_print() {
+    auto it = frontier.cbegin();
+    std::cout << it->get()->key << "(-), ";
+    it++;
+    for (; it != frontier.cend(); it++) {
+        std::cout << it->get()->key << " (";
+        std::cout << it->get()->parent->key;
+        std::cout << "), ";
+    }
+    std::cout << std::endl;
 }
 
 template class SkewHeap<int>;
